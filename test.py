@@ -39,3 +39,7 @@ G = nx.Graph(d)
 nx.draw_spring(G, node_size=300, with_labels=True)
 # ----------
 # plt.show()
+
+
+# Songs
+songs.get_recommendations(SEED)

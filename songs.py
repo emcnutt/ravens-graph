@@ -21,7 +21,7 @@ else:
 # analysis = spotify.audio_features('01b8aKaPyULAQlGywrtm8U')
 # print analysis
 
-SEED = ['01b8aKaPyULAQlGywrtm8U']
+SEED = ['68hrtOiA7J06Bp42M6KZdc']
 def get_recommendations(seed_tracks):
     seed_artists = None
     seed_genres = None
@@ -29,5 +29,3 @@ def get_recommendations(seed_tracks):
     country = 'US'
     recommendations = spotify.recommendations(seed_artists, seed_genres, seed_tracks, limit, country)
     print recommendations
-
-get_recommendations(SEED)
