@@ -1,8 +1,12 @@
+# Modules
 import numpy as np
 import networkx as nx
 import math
-import graph
 import matplotlib.pyplot as plt
+
+# Local
+import graph
+import songs
 
 
 SONGS = []
@@ -34,4 +38,4 @@ d = harmony_graph
 G = nx.Graph(d)
 nx.draw_spring(G, node_size=300, with_labels=True)
 # ----------
-plt.show()
+# plt.show()
