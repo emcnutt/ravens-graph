@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 
 SONGS = []
+FILTER_BY_TEMPO = True
 TEMPO_RANGE = 5
 
 
@@ -23,13 +24,14 @@ def create_songs():
 create_songs()
 
 
-# harmony_graph = graph.build_harmony_graph(SONGS)
+# Build harmony and tempo graph
+# ------------
+harmony_graph = graph.build_harmony_graph(SONGS, FILTER_BY_TEMPO, TEMPO_RANGE)
 # print harmony_graph
 
-harmony_and_tempo_graph = graph.build_harmony_and_tempo_graph(SONGS, TEMPO_RANGE)
-print harmony_and_tempo_graph
-
-d = harmony_and_tempo_graph
+# Graph
+d = harmony_graph
 G = nx.Graph(d)
 nx.draw_spring(G, node_size=300, with_labels=True)
+# ----------
 plt.show()

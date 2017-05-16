@@ -33,7 +33,7 @@ HARMONY = {
 
 
 # Takes a song in a list of songs and returns an array of songs that are in harmony
-def find_songs_in_harmony(song, songs):
+def find_songs_in_harmony(song, songs, filter_by_tempo, tempo_range):
     song_id = song['id']
     song_key = song['modified_key']
     harmony_matches = HARMONY[song_key]
@@ -41,31 +41,25 @@ def find_songs_in_harmony(song, songs):
     for s in songs:
         match_key = s['modified_key']
         match_id = s['id']
+        match_tempo = song['tempo']
+        max_tempo = match_tempo + tempo_range
+        min_tempo = match_tempo - tempo_range
         for value in harmony_matches:
             if value == match_key and match_id != song_id:
-                song_matches.append(match_id)
+                if filter_by_tempo:
+                    if min_tempo < match_tempo <  max_tempo:
+                        song_matches.append(match_id)
+                else:
+                    song_matches.append(match_id)
     return song_matches
 
 
-# Takes a list of songs and filters by tempo range
-def filter_songs_by_tempo_range(songs, target_tempo, tempo_range):
-    filtered_songs = []
-    for s in songs:
-        match_tempo = s['tempo']
-        match_id = s['id']
-        max_tempo = target_tempo + tempo_range
-        min_tempo = target_tempo - tempo_range
-        if min_tempo < match_tempo <  max_tempo:
-            filtered_songs.append(match_id)
-    return filtered_songs
-
-
 # Builds out a graph of songs in harmony
-def build_harmony_graph(songs):
+def build_harmony_graph(songs, filter_by_tempo=True, tempo_range=5):
     harmony_graph = {}
     for song in songs:
         song_id = song['id']
-        songs_in_harmony = find_songs_in_harmony(song, songs)
+        songs_in_harmony = find_songs_in_harmony(song, songs, filter_by_tempo, tempo_range)
         harmony_graph[song_id] = songs_in_harmony
     return harmony_graph
 
@@ -74,10 +68,10 @@ def build_harmony_graph(songs):
 def build_harmony_and_tempo_graph(songs, tempo_range):
     harmony_and_tempo_graph = {}
     for song in songs:
-        print song
+        # print song
         song_id = song['id']
         song_tempo = song['tempo']
         songs_in_harmony = find_songs_in_harmony(song, songs)
-        songs_in_harmony_and_tempo = filter_songs_by_tempo_range(songs, song_tempo, tempo_range)
+        songs_in_harmony_and_tempo = filter_songs_by_tempo_range(songs_in_harmony, songs, song_tempo, tempo_range)
         harmony_and_tempo_graph[song_id] = songs_in_harmony_and_tempo
     return harmony_and_tempo_graph
