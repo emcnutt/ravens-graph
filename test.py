@@ -2,6 +2,7 @@ import numpy as np
 import networkx as nx
 import math
 import graph
+import matplotlib.pyplot as plt
 
 
 SONGS = []
@@ -31,3 +32,4 @@ print harmony_and_tempo_graph
 d = harmony_and_tempo_graph
 G = nx.Graph(d)
 nx.draw_spring(G, node_size=300, with_labels=True)
+plt.show()
