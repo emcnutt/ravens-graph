@@ -4,7 +4,7 @@
 
 import spotipy
 import spotipy.util as util
-
+import json
 
 # Authorization
 scope = 'user-library-read'
@@ -21,11 +21,17 @@ else:
 # analysis = spotify.audio_features('01b8aKaPyULAQlGywrtm8U')
 # print analysis
 
-SEED = ['68hrtOiA7J06Bp42M6KZdc']
+
 def get_recommendations(seed_tracks):
     seed_artists = None
     seed_genres = None
-    limit = 20
+    limit = 50
     country = 'US'
     recommendations = spotify.recommendations(seed_artists, seed_genres, seed_tracks, limit, country)
-    print recommendations
+    print json.dumps(recommendations)
+    return recommendations
+
+SEED = ['6wp5tGVNQYpKJPo1s3WUEY']
+
+def get_songs()
+    get_recommendations(SEED)

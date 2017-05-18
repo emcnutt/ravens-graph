@@ -9,7 +9,7 @@ import graph
 import songs
 
 
-SONGS = []
+FAKE_SONGS = []
 FILTER_BY_TEMPO = True
 TEMPO_RANGE = 5
 
@@ -23,14 +23,16 @@ def create_songs():
         song['mode'] = int(round(np.random.random(), 0))
         song['modified_key'] = (song['key'] * (song['mode'] + 1 ))
         song['tempo'] = np.random.normal(loc=120.0, scale=8.0, size=None)
-        SONGS.append(song)
+        FAKE_SONGS.append(song)
     return
 create_songs()
 
+# Songs
+REAL_SONGS = songs.get_songs()
 
 # Build harmony and tempo graph
 # ------------
-harmony_graph = graph.build_harmony_graph(SONGS, FILTER_BY_TEMPO, TEMPO_RANGE)
+harmony_graph = graph.build_harmony_graph(FAKE_SONGS, FILTER_BY_TEMPO, TEMPO_RANGE)
 # print harmony_graph
 
 # Graph
@@ -41,5 +43,4 @@ nx.draw_spring(G, node_size=300, with_labels=True)
 # plt.show()
 
 
-# Songs
-songs.get_recommendations(SEED)
+
