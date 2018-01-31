@@ -33,21 +33,23 @@ HARMONY = {
 
 
 # Takes a song in a list of songs and returns an array of songs that are in harmony
-def find_songs_in_harmony(song, songs, filter_by_tempo, tempo_range):
+def find_songs_in_harmony(song, songs, filter_by_tempo, tempo_range, skip_same_artist=True):
     song_id = song['id']
     song_key = song['camelot']
+    song_tempo = song['tempo']
     harmony_matches = HARMONY[song_key]
     song_matches = []
     for s in songs:
         match_key = s['camelot']
         match_id = s['id']
-        match_tempo = song['tempo']
-        max_tempo = match_tempo + tempo_range
-        min_tempo = match_tempo - tempo_range
-        for value in harmony_matches:
-            if value == match_key and match_id != song_id:
+        match_tempo = s['tempo']
+        max_tempo = song_tempo + tempo_range
+        min_tempo = song_tempo - tempo_range
+        for key in harmony_matches:
+            if key == match_key and match_id != song_id:
                 if filter_by_tempo:
-                    if min_tempo < match_tempo <  max_tempo:
+                    if min_tempo <= match_tempo <=  max_tempo:
+                        # print 'Min:{0} Match:{1} Max:{2} ID:{3}'.format(min_tempo, match_tempo, max_tempo, match_id)
                         song_matches.append(match_id)
                 else:
                     song_matches.append(match_id)
@@ -55,23 +57,23 @@ def find_songs_in_harmony(song, songs, filter_by_tempo, tempo_range):
 
 
 # Builds out a graph of songs in harmony
-def build_harmony_graph(songs, filter_by_tempo=True, tempo_range=5):
+def build_harmony_graph(songs, filter_by_tempo=True, tempo_range=3):
     harmony_graph = {}
     for song in songs:
         song_id = song['id']
         songs_in_harmony = find_songs_in_harmony(song, songs, filter_by_tempo, tempo_range)
         harmony_graph[song_id] = songs_in_harmony
+    # print harmony_graph
     return harmony_graph
 
 
-# Builds out a graph of songs in harmony and tempo range
-def build_harmony_and_tempo_graph(songs, tempo_range):
-    harmony_and_tempo_graph = {}
+# Builds out list of nodes and edge count
+def build_node_edge_count(songs, filter_by_tempo=True, tempo_range=3):
+    node_edge_count = []
     for song in songs:
-        # print song
         song_id = song['id']
-        song_tempo = song['tempo']
-        songs_in_harmony = find_songs_in_harmony(song, songs)
-        songs_in_harmony_and_tempo = filter_songs_by_tempo_range(songs_in_harmony, songs, song_tempo, tempo_range)
-        harmony_and_tempo_graph[song_id] = songs_in_harmony_and_tempo
-    return harmony_and_tempo_graph
+        songs_in_harmony = find_songs_in_harmony(song, songs, filter_by_tempo, tempo_range)
+        edge_count = len(songs_in_harmony)
+        node_edge_count.append({song_id: edge_count})
+    # print node_edge_count
+    return node_edge_count

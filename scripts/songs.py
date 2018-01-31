@@ -9,11 +9,12 @@ import math
 import numpy as np
 
 # Authorization
-scope = 'user-library-read'
+scope = 'user-library-read playlist-modify-private playlist-read-private playlist-read-collaborative playlist-modify-public'
 username = '1233289929' # Change to ID
 client_id = '7a7ff44c4ab14b7a929af189770abf4c'
 client_secret = 'e613d7b6e6b744d9a489a9ae126cd2aa'
 redirect_uri = 'http://localhost/'
+playlist_id = '6wF3lPFUIZeIij8WkkA48O'
 token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
 if token:
     spotify = spotipy.Spotify(auth=token)
@@ -75,24 +76,46 @@ CAMELOT = {
 
 
 # Seed
-SEED = ['6z9xPvdW0Ql6vjpieHyu1h']
+SEED = ['45GyOy7TLJABZo7WTiz4Ou']
+TARGET_DANCEABILITY = 0.80
+TARGET_POPULARITY = None
+TARGET_ENERGY = 0.70
+TARGET_INSTRUMENTALNESS = 0.50
+TARGET_ACOUSTICNESS = None
+TARGET_VALENCE = None
+TARGET_TEMPO = None
 
-
-# Build out real songs
-def create_real_songs():
-    recommendations = get_recommendations(SEED)
+# Build out and return new songs
+def get_new_songs(network_size=100):
+    recommendations = get_recommendations(SEED, network_size)
+    # print recommendations
     ids = get_recommendation_track_ids()
     songs = get_song_data(ids);
     converted_songs = convert_key_notation(songs)
-    print 'YO: Real songs all been got'
+    print 'YO: New songs all been got'
     return converted_songs
 
 
+# Return old songs
+def get_old_songs():
+    with open('songs.json') as data_file:
+        songs = json.load(data_file)
+    print 'YO: Old songs all been got'
+    return songs
+
+
 # Get song recommendations. Takes an array of song/artist ids
-def get_recommendations(seed_tracks, seed_artists=None, seed_genres=None):
-    limit = 50
+def get_recommendations(seed_tracks, limit, seed_artists=None, seed_genres=None):
     country = 'US'
-    recommendations = spotify.recommendations(seed_artists, seed_genres, seed_tracks, limit, country, target_danceability=0.8, target_popularity=50 )
+    recommendations = spotify.recommendations(seed_artists, seed_genres, seed_tracks, limit, country,
+        target_danceability=TARGET_DANCEABILITY,
+        target_popularity=TARGET_POPULARITY,
+        target_energy=TARGET_ENERGY,
+        target_instrumentalness=TARGET_INSTRUMENTALNESS,
+        target_acousticness=TARGET_ACOUSTICNESS,
+        target_valence=TARGET_VALENCE,
+        target_tempo=TARGET_TEMPO,
+    )
 
     with open('recommendations.json', 'w') as outfile:
         json.dump(recommendations, outfile, sort_keys = True, indent = 4,
@@ -128,8 +151,7 @@ def convert_key_notation(songs):
         matched_key = CAMELOT[key]
         converted_key = matched_key[mode]
         song["camelot"] = converted_key
-        converted_songs.append(song);
-        print song
+        converted_songs.append(song)
 
     with open('songs.json', 'w') as outfile:
         json.dump(converted_songs, outfile, sort_keys = True, indent = 4,
@@ -148,3 +170,13 @@ def create_fake_songs():
         song['tempo'] = np.random.normal(loc=120.0, scale=8.0, size=None)
         fake_songs.append(song)
     return fake_songs
+
+
+# Create playlist on spotify
+def replace_playlist(tracks):
+    uris = []
+    for track in tracks:
+        uri = 'spotify:track:{0}'.format(track)
+        uris.append(uri)
+    spotify.user_playlist_replace_tracks(username, playlist_id, uris)
+
